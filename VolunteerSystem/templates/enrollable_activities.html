@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}可报名活动 - 志愿者管理系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="{{ url_for('index_volunteer') }}" class="btn btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left me-1"></i>返回志愿者首页
+            </a>
+            <h3 class="mb-0"><i class="bi bi-clipboard-plus me-2"></i>可报名活动</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <i class="bi bi-list-ul me-2"></i>活动列表
+        </div>
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('enrollable_activities', filter='all') }}" class="btn btn-sm {% if filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">全部活动</a>
+            <a href="{{ url_for('enrollable_activities', filter='registered') }}" class="btn btn-sm {% if filter == 'registered' %}btn-primary{% else %}btn-outline-primary{% endif %}">已报名</a>
+            <a href="{{ url_for('enrollable_activities', filter='unregistered') }}" class="btn btn-sm {% if filter == 'unregistered' %}btn-primary{% else %}btn-outline-primary{% endif %}">未报名</a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if activities %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for activity in activities %}
+            <div class="col">
+                <div class="card h-100 {% if activity.is_registered %}border-success{% endif %}">
+                    <div class="card-header {% if activity.is_registered %}bg-success text-white{% endif %}">
+                        <h5 class="card-title mb-0">{{ activity.activity_name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>活动类型：</strong>{{ activity.type_name }}</p>
+                        <p class="card-text"><strong>地点：</strong>{{ activity.location_name }}</p>
+                        <p class="card-text"><strong>开始时间：</strong>{{ activity.start_time.strftime('%Y-%m-%d %H:%M') if activity.start_time else '' }}</p>
+                        <p class="card-text"><strong>报名截止：</strong>{{ activity.registration_deadline.strftime('%Y-%m-%d %H:%M') if activity.registration_deadline else '' }}</p>
+                        <p class="card-text">
+                            <strong>已报名/总人数：</strong>
+                            <span class="badge {% if activity.registered_count >= activity.max_participants %}bg-danger{% elif activity.registered_count >= activity.max_participants * 0.8 %}bg-warning{% else %}bg-success{% endif %}">
+                                {{ activity.registered_count }}/{{ activity.max_participants }}
+                            </span>
+                        </p>
+                        
+                        <div class="mt-3">
+                            {% if activity.registered_count >= activity.max_participants %}
+                                <span class="badge bg-danger">名额已满</span>
+                            {% elif activity.is_registered %}
+                                <span class="badge bg-success">已报名</span>
+                                <div class="btn-group mt-2">
+                                    <a href="{{ url_for('activity_detail_volunteer', activity_id=activity.activity_id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-info-circle me-1"></i>查看详情
+                                    </a>
+                                    {% if not activity.is_activity_started %}
+                                    <form action="{{ url_for('cancel_registration', activity_id=activity.activity_id) }}" method="post" onsubmit="return confirm('确定要取消报名吗？');" class="ms-1">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-x-circle me-1"></i>取消报名
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            {% elif activity.is_deadline_passed %}
+                                <span class="badge bg-secondary">报名已截止</span>
+                                <a href="{{ url_for('activity_detail_volunteer', activity_id=activity.activity_id) }}" class="btn btn-outline-primary btn-sm ms-2">
+                                    <i class="bi bi-info-circle me-1"></i>查看详情
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('activity_detail_volunteer', activity_id=activity.activity_id) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-info-circle me-1"></i>查看详情
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>暂无{% if filter == 'registered' %}已报名{% elif filter == 'unregistered' %}未报名{% else %}可报名{% endif %}活动
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
