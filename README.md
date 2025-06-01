@@ -20,3 +20,4 @@
 ![屏幕截图 2025-06-01 170105](https://github.com/user-attachments/assets/eb56f635-0c63-4f03-a7a8-e61b69d3275f)
 …………
 剩余功能请自行探索，这里不多作展示
+注：本项目耗时三天，众多逻辑、代码bug勿cue;项目仅在本地部署，作者用的是sqlserver,windows身份验证登录。
