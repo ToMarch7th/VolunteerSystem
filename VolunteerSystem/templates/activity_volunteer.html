@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}活动志愿者 - 志愿者管理系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="{{ url_for('activities') }}" class="btn btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left me-1"></i>返回活动列表
+            </a>
+            <h3 class="mb-0"><i class="bi bi-people me-2"></i>活动志愿者管理</h3>
+        </div>
+    </div>
+</div>
+
+<!-- 活动基本信息卡片 -->
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center">
+        <i class="bi bi-info-circle me-2"></i>活动基本信息
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>活动名称：</strong>{{ activity.activity_name }}</p>
+                <p><strong>活动地点：</strong>{{ activity.location_name }}</p>
+                <p><strong>活动类型：</strong>{{ activity.type_name }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>开始时间：</strong>{{ activity.start_time.strftime('%Y-%m-%d %H:%M') if activity.start_time else '' }}</p>
+                <p><strong>结束时间：</strong>{{ activity.end_time.strftime('%Y-%m-%d %H:%M') if activity.end_time else '' }}</p>
+                <p><strong>参与人数：</strong>{{ activity.registered_count }}/{{ activity.max_participants }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 志愿者列表卡片 -->
+<div class="card">
+    <div class="card-header d-flex align-items-center">
+        <i class="bi bi-list-ul me-2"></i>参与志愿者列表
+    </div>
+    <div class="card-body">
+        {% if volunteers %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>手机号</th>
+                        <th>报名时间</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for volunteer in volunteers %}
+                    <tr>
+                        <td>{{ volunteer.user_id }}</td>
+                        <td>{{ volunteer.real_name }}</td>
+                        <td>{{ volunteer.gender }}</td>
+                        <td>{{ volunteer.phone }}</td>
+                        <td>{{ volunteer.application_time.strftime('%Y-%m-%d %H:%M') if volunteer.application_time else '' }}</td>
+                        <td>
+                            <span class="badge {% if volunteer.status == 1 %}bg-success{% elif volunteer.status == 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ '已通过' if volunteer.status == 1 else '待审核' if volunteer.status == 0 else '已拒绝' }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>暂无志愿者报名
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

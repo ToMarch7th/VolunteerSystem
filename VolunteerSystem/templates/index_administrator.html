@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 志愿者管理系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-house-door me-2"></i>欢迎使用志愿者管理系统
+            </div>
+            <div class="card-body">
+                <h4 class="mb-3">您好，管理员{{ session.username }}！</h4>
+                <p>欢迎使用志愿者管理系统。通过本系统，您可以：</p>
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item"><i class="bi bi-person-badge me-2 text-primary"></i>管理志愿者密码</li>
+                    <li class="list-group-item"><i class="bi bi-calendar-event me-2 text-primary"></i>创建和管理志愿活动</li>
+                    <li class="list-group-item"><i class="bi bi-clipboard-check me-2 text-primary"></i>处理志愿者活动报名</li>
+                    <li class="list-group-item"><i class="bi bi-journal-text me-2 text-primary"></i>记录志愿服务时长</li>
+                </ul>
+                <p>请从导航栏选择功能进行操作。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-person-lines-fill me-2"></i>志愿者管理
+            </div>
+            <div class="card-body">
+                <p>管理系统中的志愿者密码，添加新志愿者、查看志愿者列表等。</p>
+                <a href="{{ url_for('volunteers') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right-circle me-1"></i>进入志愿者管理
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-calendar-week me-2"></i>活动管理
+            </div>
+            <div class="card-body">
+                <p>创建和管理志愿活动，设置活动时间、地点、需要的志愿者人数等。</p>
+                <a href="{{ url_for('activities') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right-circle me-1"></i>进入活动管理
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-clipboard-check me-2"></i>报名管理
+            </div>
+            <div class="card-body">
+                <p>审核志愿者活动报名申请，批准或拒绝志愿者参与活动。</p>
+                <a href="{{ url_for('manage_applications') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right-circle me-1"></i>进入报名管理
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
