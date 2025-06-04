@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}我的活动 - 志愿者管理系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center">
+            <a href="{{ url_for('index_volunteer') }}" class="btn btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left me-1"></i>返回首页
+            </a>
+            <h3 class="mb-0"><i class="bi bi-journal-text me-2"></i>我的活动</h3>
+        </div>
+    </div>
+</div>
+
+<!-- 选项卡导航 -->
+<ul class="nav nav-tabs mb-4" id="activityTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true">
+            <i class="bi bi-list me-1"></i>全部活动
+            <span class="badge bg-primary ms-1">{{ activities|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="false">
+            <i class="bi bi-calendar-date me-1"></i>即将开始
+            <span class="badge bg-info ms-1">{{ upcoming_activities|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">
+            <i class="bi bi-check-circle me-1"></i>已完成
+            <span class="badge bg-success ms-1">{{ completed_activities|length }}</span>
+        </button>
+    </li>
+</ul>
+
+<!-- 选项卡内容 -->
+<div class="tab-content">
+    <!-- 全部活动 -->
+    <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-calendar-check me-2"></i>所有志愿活动记录
+                </div>
+            </div>
+            <div class="card-body">
+                {% if activities %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>活动名称</th>
+                                <th>活动类型</th>
+                                <th>活动地点</th>
+                                <th>时间</th>
+                                <th>申请状态</th>
+                                <th>活动状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in activities %}
+                            <tr>
+                                <td>{{ activity.activity_name }}</td>
+                                <td>{{ activity.activity_type }}</td>
+                                <td>{{ activity.location_name }}</td>
+                                <td>
+                                    <div>开始: {{ activity.start_time.strftime('%Y-%m-%d %H:%M') if activity.start_time else '' }}</div>
+                                    <div>结束: {{ activity.end_time.strftime('%Y-%m-%d %H:%M') if activity.end_time else '' }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge {% if activity.application_status == 0 %}bg-warning{% elif activity.application_status == 1 %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ activity.application_status_text }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if activity.activity_status == '已结束' %}bg-secondary{% elif activity.activity_status == '已满员' %}bg-info{% else %}bg-primary{% endif %}">
+                                        {{ activity.activity_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('activity_detail', activity_id=activity.activity_id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>您还没有报名任何活动
+                    <a href="{{ url_for('activities') }}" class="alert-link ms-2">去查看活动</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- 即将开始的活动 -->
+    <div class="tab-pane fade" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-calendar-date me-2"></i>即将开始的活动
+                </div>
+            </div>
+            <div class="card-body">
+                {% if upcoming_activities %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>活动名称</th>
+                                <th>活动类型</th>
+                                <th>活动地点</th>
+                                <th>时间</th>
+                                <th>活动状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in upcoming_activities %}
+                            <tr>
+                                <td>{{ activity.activity_name }}</td>
+                                <td>{{ activity.activity_type }}</td>
+                                <td>{{ activity.location_name }}</td>
+                                <td>
+                                    <div>开始: {{ activity.start_time.strftime('%Y-%m-%d %H:%M') if activity.start_time else '' }}</div>
+                                    <div>结束: {{ activity.end_time.strftime('%Y-%m-%d %H:%M') if activity.end_time else '' }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge {% if activity.activity_status == '已满员' %}bg-info{% else %}bg-primary{% endif %}">
+                                        {{ activity.activity_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('activity_detail', activity_id=activity.activity_id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>您没有即将开始的活动
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- 已完成的活动 -->
+    <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-check-circle me-2"></i>已完成的活动
+                </div>
+            </div>
+            <div class="card-body">
+                {% if completed_activities %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>活动名称</th>
+                                <th>活动类型</th>
+                                <th>活动地点</th>
+                                <th>时间</th>
+                                <th>服务时长</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in completed_activities %}
+                            <tr>
+                                <td>{{ activity.activity_name }}</td>
+                                <td>{{ activity.activity_type }}</td>
+                                <td>{{ activity.location_name }}</td>
+                                <td>
+                                    <div>开始: {{ activity.start_time.strftime('%Y-%m-%d %H:%M') if activity.start_time else '' }}</div>
+                                    <div>结束: {{ activity.end_time.strftime('%Y-%m-%d %H:%M') if activity.end_time else '' }}</div>
+                                </td>
+                                <td>
+                                    {% if activity.actual_hours %}
+                                        <span class="badge bg-success">{{ activity.actual_hours }} 小时</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">未记录</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('activity_detail', activity_id=activity.activity_id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>详情
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>您没有已完成的活动记录
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
